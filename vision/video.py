@@ -3,7 +3,6 @@ import numpy as np
 
 cap = cv2.VideoCapture(0)
 
-
 while True:
     ret, frame = cap.read()
     if not ret:
@@ -37,7 +36,6 @@ while True:
                 real_x = (cX / frame_width) * real_world_width
                 real_y = (cY / frame_height) * real_world_height
                 real_z = 0
-
 
     
 

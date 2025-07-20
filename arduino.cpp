@@ -1,34 +1,66 @@
 #include <Servo.h>
 
-Servo servo1, servo2, servo3;
+#define NUM_SERVOS 6
+Servo servos[NUM_SERVOS];
+Servo gripper;
+
+int servoPins[NUM_SERVOS] = {3, 5, 6, 9, 10, 11};  // Change pins if needed
+int gripperPin = 13;  // Example pin for gripper
 
 void setup() {
   Serial.begin(9600);
-  servo1.attach(0);
-  servo2.attach(1);
-  servo3.attach(2);
-  servo3.attach(3);
-  servo3.attach(4);
-  servo3.attach(5);
+
+  // Attach each servo
+  for (int i = 0; i < NUM_SERVOS; i++) {
+    servos[i].attach(servoPins[i]);
+  }
+
+  gripper.attach(gripperPin);
 }
 
 void loop() {
   if (Serial.available()) {
     String input = Serial.readStringUntil('\n');
-    int angles[6];
-    int idx = 0;
+    input.trim();
 
-    char *ptr = strtok((char*)input.c_str(), ",");
-    while (ptr != NULL && idx < 3) {
-      angles[idx++] = atoi(ptr);
-      ptr = strtok(NULL, ",");
+    // Handle gripper commands
+    if (input == "CLOSE") {
+      gripper.write(30);  // Adjust value for closed position
+      delay(1000);  // Allow time to close
+      Serial.println("OK");
+      return;
+    } else if (input == "OPEN") {
+      gripper.write(90);  // Adjust value for open position
+      delay(1000);  // Allow time to open
+      Serial.println("OK");
+      return;
     }
 
-    servo1.write(angles[0]);
-    servo2.write(angles[1]);
-    servo3.write(angles[2]);
-    servo3.write(angles[3]);
-    servo3.write(angles[4]);
-    servo3.write(angles[5]);
+    // Handle joint angles
+    int angles[NUM_SERVOS];
+    int index = 0;
+
+    while (input.length() > 0 && index < NUM_SERVOS) {
+      int commaIndex = input.indexOf(',');
+      String part = (commaIndex != -1) ? input.substring(0, commaIndex) : input;
+
+      angles[index] = part.toInt();
+      index++;
+
+      if (commaIndex == -1) break;
+      input = input.substring(commaIndex + 1);
+    }
+
+    // Move servos to target angles
+    if (index == NUM_SERVOS) {
+      for (int i = 0; i < NUM_SERVOS; i++) {
+        servos[i].write(angles[i]);
+      }
+
+      delay(1500);  // Wait for motion to complete
+      Serial.println("OK");
+    } else {
+      Serial.println("ERR");  // Invalid input
+    }
   }
 }
