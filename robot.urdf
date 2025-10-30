@@ -114,7 +114,7 @@
     <visual>
       <origin xyz="0.025 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.01 0.01 0."/>
+        <box size="0.003 0.003 0.109"/>
       </geometry>
       <material name="red">
         <color rgba="1.0 0.0 0.0 1.0"/>
@@ -126,7 +126,7 @@
     <visual>
       <origin xyz="-0.025 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.01 0.01 0.05"/>
+        <box size="0.003 0.003 0.109"/>
       </geometry>
       <material name="red">
         <color rgba="1.0 0.0 0.0 1.0"/>
