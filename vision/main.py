@@ -4,7 +4,6 @@ from ikpy.chain import Chain
 import serial
 import time
 
-
 arm_chain = Chain.from_urdf_file("robot.urdf")
 
 last_grasp_time = 0
