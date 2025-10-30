@@ -28,7 +28,7 @@ arm_chain = Chain.from_urdf_file(ROBOT_URDF)
 ser = serial.Serial(PORT, BAUD, timeout=0.1)
 time.sleep(2)
 
-cap = cv2.VideoCapture(ESP32_STREAM_URL)
+cap = cv2.VideoCapture(ESP32_STREAM_URL, cv2.CAP_FFMPEG)
 if not cap.isOpened():
     raise RuntimeError("ESP32-CAM stream not available.")
 
@@ -78,8 +78,8 @@ def compute_joint_angles_xyz(x, y, z, q_init=None):
 
 def choose_drop_joints(decoded_text: str):
     t = (decoded_text or "").upper()
-    if "US" in t: return DROP_US_JOINTS_DEG
-    if "UK" in t: return DROP_UK_JOINTS_DEG
+    if "Enugu" in t: return DROP_US_JOINTS_DEG
+    if "Lagos" in t: return DROP_UK_JOINTS_DEG
     return DEFAULT_DROP_JOINTS_DEG
 
 def pixel_to_world(cX, cY, frame_w, frame_h, width_m=0.40, height_m=0.30):
