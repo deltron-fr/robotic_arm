@@ -50,7 +50,8 @@ def send_move(joint_angles_deg, duration_ms=MOVE_TIME_MS):
     ser.flush()
     while True:
         line = ser.readline().decode().strip()
-        if line == "OK": break
+        if line == "OK":
+            break
 
 def send_grip(state):
     ser.write(f"GRIP {state}\n".encode())
@@ -96,7 +97,8 @@ COOLDOWN_S = 5
 
 while True:
     ret, frame = cap.read()
-    if not ret: break
+    if not ret:
+        break
     h, w = frame.shape[:2]
 
     decoded_texts, points_list, _ = qr.detectAndDecodeMulti(frame)
