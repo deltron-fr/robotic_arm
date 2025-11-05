@@ -1,7 +1,9 @@
 <robot name="robot_arm">
+
+  <!-- Base -->
   <link name="base_link">
     <visual>
-      <origin xyz="0 0 0.03" rpy="0 0 0"/>
+      <origin xyz="0 0 0.015" rpy="0 0 0"/> <!-- half of 0.03 -->
       <geometry>
         <box size="0.09 0.09 0.03"/>
       </geometry>
@@ -13,6 +15,7 @@
 
   <link name="base_rot">
     <visual>
+      <origin xyz="0 0 0.023" rpy="0 0 0"/> <!-- half of 0.046 -->
       <geometry>
         <box size="0.02 0.04 0.046"/>
       </geometry>
@@ -25,14 +28,15 @@
   <joint name="base_joint" type="revolute">
     <parent link="base_link"/>
     <child link="base_rot"/>
-    <origin xyz="0 0 0.1" rpy="0 0 0"/>
+    <origin xyz="0 0 0.03" rpy="0 0 0"/> <!-- top of base_link -->
     <axis xyz="0 0 -1"/>
     <limit effort="1.0" velocity="1.0" lower="0" upper="3.1416"/>
   </joint>
 
+  <!-- Arm Segment 1 -->
   <link name="arm1">
     <visual>
-      <origin xyz="0 0 0.065" rpy="0 0 0"/>
+      <origin xyz="0 0 0.0525" rpy="0 0 0"/> <!-- half of 0.105 -->
       <geometry>
         <cylinder length="0.105" radius="0.013"/>
       </geometry>
@@ -45,14 +49,15 @@
   <joint name="shoulder_joint" type="revolute">
     <parent link="base_rot"/>
     <child link="arm1"/>
-    <origin xyz="0 0 0.105" rpy="0 0 0"/>
+    <origin xyz="0 0 0.046" rpy="0 0 0"/> <!-- top of base_rot -->
     <axis xyz="1 0 0"/>
-    <limit lower="0" upper="1.57"/>
+    <limit lower="-1.57" upper="1.57"/>
   </joint>
 
+  <!-- Arm Segment 2 -->
   <link name="arm2">
     <visual>
-      <origin xyz="0 0 0.065" rpy="0 0 0"/>
+      <origin xyz="0 0 0.063" rpy="0 0 0"/> <!-- half of 0.126 -->
       <geometry>
         <cylinder length="0.126" radius="0.008"/>
       </geometry>
@@ -65,14 +70,15 @@
   <joint name="elbow_joint" type="revolute">
     <parent link="arm1"/>
     <child link="arm2"/>
-    <origin xyz="0 0 0.126" rpy="0 0 0"/>
+    <origin xyz="0 0 0.105" rpy="0 0 0"/> <!-- top of arm1 -->
     <axis xyz="1 0 0"/>
     <limit lower="-1.3" upper="1.92"/>
   </joint>
 
+  <!-- Arm Segment 3 -->
   <link name="arm3">
     <visual>
-      <origin xyz="0 0 0.065" rpy="0 0 0"/>
+      <origin xyz="0 0 0.0265" rpy="0 0 0"/> <!-- half of 0.053 -->
       <geometry>
         <cylinder length="0.053" radius="0.022"/>
       </geometry>
@@ -85,16 +91,17 @@
   <joint name="wrist_joint" type="revolute">
     <parent link="arm2"/>
     <child link="arm3"/>
-    <origin xyz="0 0 0.053" rpy="0 0 0"/>
+    <origin xyz="0 0 0.126" rpy="0 0 0"/> <!-- top of arm2 -->
     <axis xyz="1 0 0"/>
     <limit lower="-1.3" upper="1.92"/>
   </joint>
 
+  <!-- Gripper Body -->
   <link name="gripper_link">
     <visual>
       <origin xyz="0 0 0.005" rpy="0 0 0"/>
       <geometry>
-        <box size="0.002 0.002 0.002"/>
+        <box size="0.05 0.05 0.01"/>
       </geometry>
       <material name="red">
         <color rgba="1.0 0.0 0.0 1.0"/>
@@ -105,16 +112,17 @@
   <joint name="gripper_rotation" type="revolute">
     <parent link="arm3"/>
     <child link="gripper_link"/>
-    <origin xyz="0 0 0.002" rpy="0 0 0"/>
+    <origin xyz="0 0 0.053" rpy="0 0 0"/> <!-- top of arm3 -->
     <axis xyz="0 0 1"/>
     <limit lower="-1.57" upper="1.57" effort="1.0" velocity="1.0"/>
   </joint>
 
+  <!-- Fingers directly attached to the servo horn -->
   <link name="left_finger">
     <visual>
-      <origin xyz="0.025 0 0" rpy="0 0 0"/>
+      <origin xyz="0.015 0 0.025" rpy="0 0 0"/>
       <geometry>
-        <box size="0.003 0.003 0.109"/>
+        <box size="0.01 0.01 0.05"/>
       </geometry>
       <material name="red">
         <color rgba="1.0 0.0 0.0 1.0"/>
@@ -124,9 +132,9 @@
 
   <link name="right_finger">
     <visual>
-      <origin xyz="-0.025 0 0" rpy="0 0 0"/>
+      <origin xyz="-0.015 0 0.025" rpy="0 0 0"/>
       <geometry>
-        <box size="0.003 0.003 0.109"/>
+        <box size="0.01 0.01 0.05"/>
       </geometry>
       <material name="red">
         <color rgba="1.0 0.0 0.0 1.0"/>
@@ -134,19 +142,22 @@
     </visual>
   </link>
 
+  <!-- One active prismatic joint for both fingers -->
   <joint name="left_finger_joint" type="prismatic">
     <parent link="gripper_link"/>
     <child link="left_finger"/>
-    <origin xyz="0.025 0 0.025" rpy="0 0 0"/>
+    <origin xyz="0.015 0 0" rpy="0 0 0"/>
     <axis xyz="1 0 0"/>
-    <limit lower="-0.05" upper="0.0" effort="10.0" velocity="0.1"/>
+    <limit lower="-0.02" upper="0.02" effort="10.0" velocity="0.1"/>
   </joint>
 
-  <joint name="right_finger_joint" type="prismatic">
+  <!-- Right finger fixed or mimics the left one -->
+  <joint name="right_finger_fixed" type="fixed">
     <parent link="gripper_link"/>
     <child link="right_finger"/>
-    <origin xyz="-0.025 0 0.025" rpy="0 0 0"/>
-    <axis xyz="-1 0 0"/>
-    <limit lower="-0.05" upper="0.0" effort="10.0" velocity="0.1"/>
+    <origin xyz="-0.015 0 0" rpy="0 0 0"/>
   </joint>
+
+  
+
 </robot>
